@@ -7,11 +7,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api1/v2")
+@RequestMapping("/api/v2")
 public class TaskController {
 
     @Autowired
@@ -26,33 +25,35 @@ public class TaskController {
     public Task addNewTask(@RequestBody Task task) {
         Task newTask = new Task(task.getTitle(), task.getDescription(),
                 task.getAssignee());
-        String date = new Date().toString();
-        History history = new History("task is assigned to: " + task.getAssignee());
-        newTask.getHistoryList().add(history);
+        History history = new History("Task is assigned to: " + task.getAssignee());
+        newTask.addToHistory(history);
         taskRepository.save(newTask);
         return newTask;
     }
 
     @GetMapping("/users/{name}/tasks")
-    public Optional<Task> getTasksOfName(@PathVariable String name){
-        Optional<Task> tasks = taskRepository.findByAssignee(name);
-        return tasks;
+    public List<Task> getTasksofUser(@PathVariable String name){
+        return (List) taskRepository.findAllByAssignee(name);
     }
 
     @PutMapping("/tasks/{id}/state")
     public Task updateStatus(@PathVariable String id){
         Task task = taskRepository.findById(id).get();
         String status = task.getStatus();
-        String date = new Date().toString();
-        History history = new History("task is assigned to: " + task.getAssignee());
+
         if(status.equals("available")){
             task.setStatus("assigned");
+            History history = new History("Task assigned to " + task.getAssignee());
+            task.addToHistory(history);
         }else if(status.equals("assigned")){
             task.setStatus("accepted");
+            History history = new History("Task accepted by " + task.getAssignee());
+            task.addToHistory(history);
         }else if(status.equals("accepted")){
             task.setStatus("finished");
+            History history = new History("Task finished by " + task.getAssignee());
+            task.addToHistory(history);
         }
-        task.getHistoryList().add(history);
         taskRepository.save(task);
         return task;
     }
@@ -63,9 +64,8 @@ public class TaskController {
         task.setAssignee(assignee);
         task.setStatus("assigned");
         String status = task.getStatus();
-        Date date = new Date();
-        History history = new History("task is assigned to: " + task.getAssignee());
-        task.getHistoryList().add(history);
+        History history = new History("Task assigned to: " + task.getAssignee());
+        task.addToHistory(history);
         taskRepository.save(task);
         return task;
     }

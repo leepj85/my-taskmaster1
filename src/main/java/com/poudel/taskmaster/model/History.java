@@ -1,12 +1,14 @@
 package com.poudel.taskmaster.model;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.*;
+
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDocument;
 
 import java.util.Date;
 
 
 @DynamoDBDocument
-public class History { ;
+public class History {
+
     private String date;
     private String action;
 

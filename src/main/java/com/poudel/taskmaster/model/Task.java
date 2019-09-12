@@ -9,14 +9,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@DynamoDBTable(tableName = "task")
+@DynamoDBTable(tableName = "taskmaster")
 public class Task {
     private String id;
     private String title;
     private String description;
     private String status;
     private String assignee;
-    private List<History> historyList = new ArrayList<>();
+    private ArrayList<History> historyList;
 
     public Task(){}
 
@@ -25,7 +25,6 @@ public class Task {
         this.description = description;
         this.status = "available";
         this.historyList = new ArrayList<>();
-        this.assignee = null;
     }
 
     public Task(String title, String description, String assignee){
@@ -90,13 +89,19 @@ public class Task {
         this.assignee = assignee;
     }
 
+
+
+
     @DynamoDBAttribute
-    public List<History> getHistoryList() {
+    public ArrayList<History> getHistory() {
         return historyList;
     }
 
-    public void setHistoryList(List<History> historyList) {
+    public void setHistory(ArrayList<History> historyList) {
         this.historyList = historyList;
     }
 
+    public void addToHistory(History history){
+        this.historyList.add(history);
+    }
 }
