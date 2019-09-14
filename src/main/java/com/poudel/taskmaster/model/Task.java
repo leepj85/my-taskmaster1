@@ -16,6 +16,7 @@ public class Task {
     private String description;
     private String status;
     private String assignee;
+    private String imgURL;
     private ArrayList<History> historyList;
 
     public Task(){}
@@ -53,22 +54,9 @@ public class Task {
         return this.title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-
     @DynamoDBAttribute
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     @DynamoDBAttribute
@@ -76,25 +64,43 @@ public class Task {
         return status;
     }
 
-    public void setStatus(String status) {
-        this.status= status;
-    }
-
     @DynamoDBAttribute
     public String getAssignee() {
         return assignee;
+    }
+
+    @DynamoDBAttribute
+    public String getImgURL() {
+        return imgURL;
+    }
+
+    @DynamoDBAttribute
+    public ArrayList<History> getHistory() {
+        return historyList;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setStatus(String status) {
+        this.status= status;
     }
 
     public void setAssignee(String assignee) {
         this.assignee = assignee;
     }
 
-
-
-
-    @DynamoDBAttribute
-    public ArrayList<History> getHistory() {
-        return historyList;
+    public void setImgURL(String imgURL) {
+        this.imgURL = imgURL;
     }
 
     public void setHistory(ArrayList<History> historyList) {
@@ -104,4 +110,6 @@ public class Task {
     public void addToHistory(History history){
         this.historyList.add(history);
     }
+
+
 }

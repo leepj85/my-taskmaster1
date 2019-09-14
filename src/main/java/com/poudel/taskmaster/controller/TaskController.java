@@ -1,9 +1,11 @@
 package com.poudel.taskmaster.controller;
 import com.poudel.taskmaster.model.History;
 import com.poudel.taskmaster.model.Task;
+import com.poudel.taskmaster.repository.S3Client;
 import com.poudel.taskmaster.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.List;
@@ -12,6 +14,13 @@ import java.util.List;
 @CrossOrigin
 @RequestMapping("/api/v2")
 public class TaskController {
+
+    private S3Client s3Client;
+
+    @Autowired
+    TaskController(S3Client s3Client) {
+        this.s3Client = s3Client;
+    }
 
     @Autowired
     TaskRepository taskRepository;
@@ -42,18 +51,19 @@ public class TaskController {
         String status = task.getStatus();
 
         if(status.equals("available")){
-            task.setStatus("assigned");
+            status = "assigned";
             History history = new History("Task assigned to " + task.getAssignee());
             task.addToHistory(history);
         }else if(status.equals("assigned")){
-            task.setStatus("accepted");
+            status = "accepted";
             History history = new History("Task accepted by " + task.getAssignee());
             task.addToHistory(history);
         }else if(status.equals("accepted")){
-            task.setStatus("finished");
+            status = "finished";
             History history = new History("Task finished by " + task.getAssignee());
             task.addToHistory(history);
         }
+        task.setStatus(status);
         taskRepository.save(task);
         return task;
     }
@@ -66,6 +76,15 @@ public class TaskController {
         String status = task.getStatus();
         History history = new History("Task assigned to: " + task.getAssignee());
         task.addToHistory(history);
+        taskRepository.save(task);
+        return task;
+    }
+
+    @PostMapping("/tasks/{id}/images")
+    public Task uploadTaskImage( @PathVariable String id, @RequestPart(value = "file") MultipartFile file ) {
+        String url = this.s3Client.uploadFile(file);
+        Task task = taskRepository.findById(id).get();
+        task.setImgURL(url);
         taskRepository.save(task);
         return task;
     }
